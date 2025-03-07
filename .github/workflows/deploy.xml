@@ -27,4 +27,4 @@ jobs:
     - name: Rodar o bot
       run: ./bot
       env:
-        DISCORD_TOKEN: ${{ secrets.TOKEN }}
+        TOKEN: ${{ secrets.TOKEN }}
