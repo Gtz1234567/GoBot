@@ -10,15 +10,11 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"Bot/commands" // Certifique-se de que o nome do módulo no go.mod seja "Bot"
 	"Bot/interactions"
-	"github.com/joho/godotenv"
 )
 
 func main() {
 	// Carregar variáveis de ambiente do arquivo .env
-//	err := godotenv.Load()
-//	if err != nil {
-//		log.Fatal("Erro ao carregar o arquivo .env", err)
-//	}
+
 
 	// Obter o token do Discord a partir da variável de ambiente
 	Token := os.Getenv("TOKEN")
