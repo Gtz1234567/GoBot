@@ -13,11 +13,8 @@ import (
 )
 
 func main() {
-	// Carregar variáveis de ambiente do arquivo .env
-
-
 	// Obter o token do Discord a partir da variável de ambiente
-	Token := os.Getenv("TOKEN")
+	Token := os.Getenv("TOKEN") // "TOKEN" é o nome da variável de ambiente configurada no Discloud
 	if Token == "" {
 		log.Fatal("Token do Discord não encontrado")
 	}
