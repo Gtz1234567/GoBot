@@ -21,7 +21,7 @@ func main() {
 	}
 
 	// Obter o token do Discord a partir da variável de ambiente
-	Token := os.Getenv("token")
+	Token := os.Getenv("TOKEN")
 	if Token == "" {
 		log.Fatal("Token do Discord não encontrado")
 	}
