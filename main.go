@@ -15,10 +15,10 @@ import (
 
 func main() {
 	// Carregar variáveis de ambiente do arquivo .env
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Erro ao carregar o arquivo .env", err)
-	}
+//	err := godotenv.Load()
+//	if err != nil {
+//		log.Fatal("Erro ao carregar o arquivo .env", err)
+//	}
 
 	// Obter o token do Discord a partir da variável de ambiente
 	Token := os.Getenv("TOKEN")
