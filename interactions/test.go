@@ -4,15 +4,30 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// Função para registrar o manipulador de interações (como botões)
+var messageAuthorID = make(map[string]string) // Mapa para armazenar o autor da mensagem
+
 func RegisterInteractionHandler(s *discordgo.Session) {
-	// Registra o evento de interação
 	s.AddHandler(func(s *discordgo.Session, m *discordgo.InteractionCreate) {
-		// Verifica se a interação é um componente de mensagem (botão clicado)
 		if m.Type == discordgo.InteractionMessageComponent {
-			// Lida com o clique do botão
-			if m.MessageComponentData().CustomID == "click" {
-				// Responde ao clique no botão
+			customID := m.MessageComponentData().CustomID
+
+			if customID == "click" {
+				// Verifica se o ID da mensagem está no mapa
+				authorID, exists := messageAuthorID[m.Message.ID]
+
+				if !exists || authorID != m.Member.User.ID {
+					// Se não for o autor da mensagem, responde que a interação não é para ele
+					s.InteractionRespond(m.Interaction, &discordgo.InteractionResponse{
+						Type: discordgo.InteractionResponseChannelMessageWithSource,
+						Data: &discordgo.InteractionResponseData{
+							Content: "Essa interação não é para você!",
+							Flags:   discordgo.MessageFlagsEphemeral, // Mensagem visível apenas para o usuário que tentou interagir
+						},
+					})
+					return
+				}
+
+				// Se for o autor, responde normalmente
 				s.InteractionRespond(m.Interaction, &discordgo.InteractionResponse{
 					Type: discordgo.InteractionResponseChannelMessageWithSource,
 					Data: &discordgo.InteractionResponseData{
@@ -22,4 +37,9 @@ func RegisterInteractionHandler(s *discordgo.Session) {
 			}
 		}
 	})
+}
+
+// Função para registrar o autor de uma mensagem
+func RegisterMessageAuthor(messageID, authorID string) {
+	messageAuthorID[messageID] = authorID
 }

@@ -2,52 +2,46 @@ package commands
 
 import (
 	"fmt"
-	"go/parser"
-	"strings"
-
 	"github.com/bwmarrin/discordgo"
+	"go/parser"
+	"log"
+	"strings"
 )
 
-// Comando de eval básico
+// Função que será chamada quando o comando g+eval for chamado
 func init() {
-	Commands["eval"] = func(s *discordgo.Session, m *discordgo.MessageCreate) {
-		// Verificar se o autor é um administrador (evitar uso indevido)
-		if !isAdmin(m.Author.ID) {
-			s.ChannelMessageSend(m.ChannelID, "Você não tem permissão para usar esse comando.")
-			return
-		}
-
-		// Pega a expressão após o comando "eval "
-		expression := strings.TrimPrefix(m.Content, "g+eval ")
-
-		// Avaliar a expressão
-		result, err := evaluateExpression(expression)
-		if err != nil {
-			s.ChannelMessageSend(m.ChannelID, "Erro ao avaliar a expressão: "+err.Error())
-		} else {
-			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Resultado: %s", result))
-		}
+Commands["eval"] = func(s *discordgo.Session, m *discordgo.MessageCreate) {
+	// Ignora mensagens enviadas pelo próprio bot
+	if m.Author.ID == s.State.User.ID {
+		return
 	}
-}
 
-// Função que avalia a expressão simples
-func evaluateExpression(expr string) (string, error) {
-	// Tenta analisar e avaliar a expressão como uma expressão aritmética
-	expr = strings.ReplaceAll(expr, " ", "") // Remove espaços em branco
+	// Verifica se o comando começa com "g+eval"
+	if !strings.HasPrefix(m.Content, "g+eval") {
+		return
+	}
 
-	// Usar o parser do Go para avaliar a expressão aritmética
-	node, err := parser.ParseExpr(expr)
+	// Remove o prefixo "g+eval" e espaços em branco
+	code := strings.TrimSpace(strings.TrimPrefix(m.Content, "g+eval"))
+
+	if code == "" {
+		s.ChannelMessageSend(m.ChannelID, "Por favor, forneça um código para avaliar.")
+		return
+	}
+
+	// Cria um novo analisador de código
+	node, err := parser.ParseExpr(code)
 	if err != nil {
-		return "", fmt.Errorf("erro ao analisar a expressão: %v", err)
+		log.Printf("Erro ao analisar código: %v", err)
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Erro ao avaliar o código: %v", err))
+		return
 	}
 
-	// Aqui podemos adicionar lógica para executar a expressão analisada
-	// Como exemplo, vamos apenas retornar a expressão como string
-	return fmt.Sprintf("%v", node), nil
-}
+	// Aqui, em vez de executar o código diretamente, você pode simplesmente verificar se o código é válido
+	// O código será analisado para garantir que não haja erros de sintaxe.
+	result := fmt.Sprintf("Código analisado com sucesso: %s", node)
 
-// Função fictícia para verificar se o autor é administrador
-func isAdmin(userID string) bool {
-	// Aqui você pode usar uma lista de IDs de administradores ou fazer verificações de permissão
-	return userID == "1318667195005407285" // Altere para seu ID de Discord
+	// Retorna o resultado da avaliação
+	s.ChannelMessageSend(m.ChannelID, result)
+}
 }

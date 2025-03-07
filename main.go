@@ -21,7 +21,7 @@ func main() {
 	}
 
 	// Obter o token do Discord a partir da variável de ambiente
-	Token := os.Getenv("token") // Aqui você já usa corretamente o Getenv
+	Token := os.Getenv("token")
 	if Token == "" {
 		log.Fatal("Token do Discord não encontrado")
 	}
@@ -83,9 +83,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	// Verificar se a mensagem começa com "g+"
 	if strings.HasPrefix(strings.ToLower(m.Content), "g+") {
+		// Pega o comando removendo o prefixo "g+" e cortando tudo depois do comando
 		command := strings.TrimPrefix(strings.ToLower(m.Content), "g+")
 
-		// Se o comando existir, execute
+		// Limita o comando ao primeiro espaço (isso permite ignorar qualquer coisa depois)
+		command = strings.SplitN(command, " ", 2)[0]
+
+		// Verifique se o comando registrado existe
 		if cmd, exists := commands.Commands[command]; exists {
 			cmd(s, m)
 		}
